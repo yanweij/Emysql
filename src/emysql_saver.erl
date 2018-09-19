@@ -83,15 +83,13 @@ save(ConnOrPool, Table, [Record0, Fields] = _RecordInput, Options) ->
                                            emysql:execute(Pool, Sql, Values)
                                    end,
                           case Result of
-                              % #ok_packet{affected_rows = Affected, insert_id = InsertId} ->
-                              %     case {Affected, length(Records), FieldPK} of
-                              %         {1, 1, id} ->
-                              %             [Record] = Records,
-                              %             [setelement(2, Record, InsertId) | AccIn];
-                              %         _         -> AccIn
-                              %     end;
-                              #ok_packet{} ->
-                                  AccIn;
+                              #ok_packet{affected_rows = Affected, insert_id = InsertId} ->
+                                  case {Affected, length(Records), FieldPK} of
+                                      {1, 1, id} ->
+                                          [Record] = Records,
+                                          [setelement(2, Record, InsertId) | AccIn];
+                                      _         -> AccIn
+                                  end;
                               #error_packet{code = Code, msg = Msg} ->
                                   throw({Code, Msg})
                           end
